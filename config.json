@@ -1,0 +1,7 @@
+{
+  "MongoUrl": "mongodb://mongo",
+  "MongoTable": "prefixtopicservice",
+  "RoutesCollection": "routes",
+  "ServerPort": "8080",
+  "LogLevel": "CALL"
+}

@@ -1,0 +1,233 @@
+#Some useful metainformation
+swagger: '2.0'
+info:
+  title: Prefix Topic
+  termsOfService: http://swagger.io/terms/
+  description: 'The Prefix Topic Service is used by two actors: Actor 1 is any service that wants to receive certain messages. Actor 2 is the Kafka Topic Router, which requests the Prefix Topic Service to whom a specific message with a specific topic and with certain properties should be forwarded. Therefore, the Prefix Topic Service manages the routing table for the Tafka Topic Router.'
+  version: '1.0'
+  contact:
+    name: sh20xyqi
+    email: sh20xyqi@studserv.uni-leipzig.de
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+schemes:
+  - https
+
+host: api.sepl.infai.org
+
+basePath: /prefixtopicservice
+
+produces:
+  - text/plain
+
+tags:
+  - name: prefixtopicservice
+    description: Operations which belong to the set prefixtopicservice
+
+#Everything that belongs to prefix-topic-service API
+paths:
+  #Everything that belongs to prefixtopicservice
+  #Everything that belongs to prefixtopicservice/rest.go
+
+  /get/routes/{topic}/{prefix}:
+    get:
+      tags:
+        - prefixtopicservice
+      summary:
+        Get target topics for given source topic and message prefix.
+      description:
+        ''
+      produces:
+        - application/json
+      parameters:
+        - name: topic
+          in: path
+          description: Identifies the the to be used topic.
+          required: true
+          type: string
+        - name: prefix
+          in: path
+          description: Identifies the the to be used prefix.
+          required: true
+          type: string
+      responses:
+        200:
+          description: Returns an array consisting of Route and its consisting target.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RouteWithRouteTarget'
+        500:
+          description: Returns an ErrorMessage containing further information about the specific error. This error could be - Server was not able to get routes from server.
+          schema:
+            $ref: '#/definitions/ErrorMessage'
+  /remove/prefix/{prefix}/{target}:
+    delete:
+      tags:
+        - prefixtopicservice
+      summary:
+        Delete / Remove all routes to target with prefix.
+      description:
+        ''
+      produces:
+        - application/json
+      parameters:
+        - name: prefix
+          in: path
+          description: Identifies the the to be deleted prefix.
+          required: true
+          type: string
+        - name: target
+          in: path
+          description: Identifies the the to be used target.
+          required: true
+          type: string
+      responses:
+        200:
+          description: Returns 'ok'.
+        500:
+          description: Returns an ErrorMessage containing further information about the specific error. This error could be - Server was not able to delete prefix.
+          schema:
+            $ref: '#/definitions/ErrorMessage'
+  /remove/target/{target}:
+    delete:
+      tags:
+        - prefixtopicservice
+      summary:
+        Delete / Remove all routes to target.
+      description:
+        ''
+      produces:
+        - application/json
+      parameters:
+        - name: target
+          in: path
+          description: Identifies the the to be used target.
+          required: true
+          type: string
+      responses:
+        200:
+          description: Returns 'ok'.
+        500:
+          description: Returns an ErrorMessage containing further information about the specific error. This error could be - Server was not able to delete target.
+          schema:
+            $ref: '#/definitions/ErrorMessage'
+  /add/route/{topic}/{prefix}/{target}:
+    post:
+      tags:
+        - prefixtopicservice
+      summary:
+        Creates new route.
+      description:
+        ''
+      produces:
+        - application/json
+      parameters:
+        - name: topic
+          in: path
+          description: Identifies the the to be used topic.
+          required: true
+          type: string
+        - name: prefix
+          in: path
+          description: Identifies the the to be used prefix.
+          required: true
+          type: string
+        - name: target
+          in: path
+          description: Identifies the the to be used target.
+          required: true
+          type: string
+      responses:
+        200:
+          description: Returns 'ok'.
+        500:
+          description: Returns an ErrorMessage containing further information about the specific error. This error could be - Server was not able to create route.
+          schema:
+            $ref: '#/definitions/ErrorMessage'
+  /remove/route/{topic}/{prefix}/{target}:
+    delete:
+      tags:
+        - prefixtopicservice
+      summary:
+        Remove route from database.
+      description:
+        ''
+      produces:
+        - application/json
+      parameters:
+        - name: topic
+          in: path
+          description: Identifies the the to be used topic.
+          required: true
+          type: string
+        - name: prefix
+          in: path
+          description: Identifies the the to be used prefix.
+          required: true
+          type: string
+        - name: target
+          in: path
+          description: Identifies the the to be used target.
+          required: true
+          type: string
+      responses:
+        200:
+          description: Returns 'ok'.
+        500:
+          description: Returns an ErrorMessage containing further information about the specific error. This error could be - Server was not able to remove route from database.
+          schema:
+            $ref: '#/definitions/ErrorMessage'
+#Everything that belongs to definitions:
+definitions:
+  Route:
+    type: object
+    properties:
+      topic:
+        type: string
+        format: string
+      prefix:
+        type: string
+        format: string
+      target:
+        type: string
+        format: string
+    required:
+      - topic
+      - prefix
+      - target
+  RouteWithRouteTarget:
+    type: object
+    properties:
+      route:
+        type: object
+        format: '#/definitions/Route'
+      target:
+        type: string
+        format: string
+    required:
+      - route
+      - target
+  ErrorMessage:
+    type: object
+    properties:
+      status_code:
+        type: integer
+        format: int32
+      message:
+        type: string
+        format: string
+      error_code:
+        type: string
+        format: string
+      detail:
+        type: array
+        items:
+          type: string
+    required:
+      - status_code
+      - message
+      - error_code
+      - detail
